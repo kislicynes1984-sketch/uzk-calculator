@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1a29">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Затухание УЗК">
+  <meta name="description" content="Офлайн-калькулятор коэффициента затухания ультразвука для прямого и наклонного ПЭП.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Затухание УЗК · шапка и вкладки закреплены</title>
+</head>
+<body>
+  <main class="app">
+    <div class="sticky-shell">
+    <header class="topbar">
+      <div class="mark">UT</div>
+      <div class="brand"><strong>Затухание УЗК</strong><span>Калькулятор коэффициента α</span></div>
+      <span class="offline"><span class="offlinedot"></span>Офлайн</span>
+    </header>
+    <nav class="tabs" role="tablist" aria-label="Тип преобразователя">
+      <button id="tab-direct" class="tab active" role="tab" aria-selected="true" aria-controls="direct-content" data-tab="direct">Прямой ПЭП <span>0°</span></button>
+      <button id="tab-angle" class="tab" role="tab" aria-selected="false" aria-controls="angle-content" data-tab="angle">Наклонный ПЭП <span>45–70°</span></button>
+    </nav>
+    </div>
+    <section class="intro">
+      <div class="eyebrow">ПРОМЫШЛЕННЫЙ УЛЬТРАЗВУКОВОЙ КОНТРОЛЬ</div>
+      <h1>Расчёт затухания</h1>
+      <p>По двум эхосигналам с поправкой на геометрическое расхождение. Результат — в дБ/м.</p>
+    </section>
+    <section id="direct-content" class="tab-content" role="tabpanel" aria-labelledby="tab-direct">
+      <article class="panel">
+        <div class="panel-head"><span class="step">01</span><h2>Донные эхосигналы</h2></div>
+        <div class="field"><div class="field-label">Выберите пару</div>
+          <div class="choice-row" role="group" aria-label="Пара донных сигналов">
+            <button class="chip active" type="button" data-pair="12">1-й и 2-й</button>
+            <button class="chip" type="button" data-pair="34">3-й и 4-й</button>
+          </div>
+        </div>
+        <label class="field"><span class="field-label">Толщина металла <small>t, мм</small></span><input id="direct-t" inputmode="decimal" type="text" placeholder="Например, 20" autocomplete="off"></label>
+        <div class="field"><span class="field-label">Акустические пути</span><p class="hint">Полный путь ультразвука: <strong>S = 2nt</strong>, где n — номер донного сигнала.</p>
+          <div class="choice-row compact" role="group" aria-label="Ввод путей"><button class="chip active" data-dpath="auto" type="button">Из толщины</button><button class="chip" data-dpath="manual" type="button">Вручную</button></div>
+        </div>
+        <div class="pair-grid">
+          <label class="field"><span class="field-label">S₁, мм</span><input id="direct-s1" type="text" inputmode="decimal" placeholder="—" disabled></label>
+          <label class="field"><span class="field-label">S₂, мм</span><input id="direct-s2" type="text" inputmode="decimal" placeholder="—" disabled></label>
+        </div>
+        <section class="nearzone-panel" aria-labelledby="direct-near-title">
+          <h3 id="direct-near-title">Ближняя зона прямого ПЭП</h3>
+          <p class="hint">Расчёт по площади пьезоэлемента, частоте и скорости продольной волны в металле. Для прямого ПЭП угол равен 0°, призма не используется.</p>
+          <div class="field"><span class="field-label">Форма пьезоэлемента</span>
+            <div class="choice-row" role="group" aria-label="Форма прямого ПЭП">
+              <button class="chip active" type="button" data-dnshape="circle">Круглый</button>
+              <button class="chip" type="button" data-dnshape="rectangle">Прямоугольный</button>
+            </div>
+          </div>
+          <div class="pair-grid">
+            <label class="field"><span class="field-label">Частота <small>f, МГц</small></span><input id="direct-near-frequency" type="text" inputmode="decimal" placeholder="Например, 2,5"></label>
+            <label class="field" id="direct-near-diameter-wrap"><span class="field-label">Диаметр <small>D, мм</small></span><input id="direct-near-diameter" type="text" inputmode="decimal" placeholder="Например, 12"></label>
+          </div>
+          <div class="pair-grid" id="direct-near-rect-wrap" hidden>
+            <label class="field"><span class="field-label">Длина <small>a, мм</small></span><input id="direct-near-length" type="text" inputmode="decimal" placeholder="Например, 12"></label>
+            <label class="field"><span class="field-label">Ширина <small>b, мм</small></span><input id="direct-near-width" type="text" inputmode="decimal" placeholder="Например, 10"></label>
+          </div>
+          <label class="field"><span class="field-label">Скорость продольной волны <small>cₗ, м/с</small></span><input id="direct-near-velocity" type="text" inputmode="decimal" placeholder="5900"></label>
+          <p class="footnote">Для стали предварительно установлено <b>5900 м/с</b>. При другой марке стали или сплаве введи измеренную скорость.</p>
+          <div class="nearzone-values">
+            <div><span>Длина волны λ</span><strong id="direct-near-wavelength">— мм</strong></div>
+            <div><span>Расчётная ближняя зона N</span><strong id="direct-near-n">— мм</strong></div>
+            <div><span>Толщина изделия t</span><strong id="direct-near-t">— мм</strong></div>
+            <div><span>Минимальная толщина 3N</span><strong id="direct-near-3n">— мм</strong></div>
+          </div>
+          <div class="nearzone-status pending" id="direct-near-status" role="status">Введите частоту и размер пьезоэлемента для расчёта N.</div>
+          <p class="footnote">N = S/(πλ) = S·f/(πcₗ); для круглого элемента N = D²f/(4cₗ). Скорость cₗ — в мм/мкс. По ГОСТ Р 50.05.05-2018, п. 7.1.12 и приложению А.2, при t ≥ 3N допустима геометрическая поправка 6 дБ для пары 1–2. Расчёт по паре 3–4 остаётся приближённым. Для прямоугольного элемента N оценено через эквивалентную площадь.</p>
+        </section>
+      </article>
+    </section>
+    <section id="angle-content" class="tab-content" role="tabpanel" aria-labelledby="tab-angle" hidden>
+      <article class="panel">
+        <div class="panel-head"><span class="step">01</span><h2>Сигналы от двугранного угла</h2></div>
+        <div class="pair-grid">
+          <label class="field"><span class="field-label">Толщина <small>t, мм</small></span><input id="angle-t" type="text" inputmode="decimal" placeholder="Например, 40"></label>
+          <label class="field"><span class="field-label">Угол ввода <small>°</small></span><input id="angle-deg" type="text" inputmode="decimal" placeholder="45–70"></label>
+        </div>
+        <div class="field"><span class="field-label">Расстояния по лучу до углов</span><p class="hint">Здесь <strong>L₁ и L₂ — пути в одну сторону</strong>. Они могут зависеть от реальной схемы прозвучивания.</p>
+        <div class="choice-row compact" role="group" aria-label="Способ задания пути"><button class="chip active" data-apath="manual" type="button">Ввести L₁ и L₂</button><button class="chip" data-apath="auto" type="button">Модель 1t / 2t</button></div></div>
+        <div class="pair-grid">
+          <label class="field"><span class="field-label">L₁, мм <small>ближний угол</small></span><input id="angle-l1" type="text" inputmode="decimal" placeholder="Например, 62,23"></label>
+          <label class="field"><span class="field-label">L₂, мм <small>дальний угол</small></span><input id="angle-l2" type="text" inputmode="decimal" placeholder="Например, 124,46"></label>
+        </div>
+        <p id="angle-pathnote" class="footnote">Для реальной геометрии предпочтительно вводить пути, определённые по развертке дефектоскопа.</p>
+        <section class="nearzone-panel" aria-labelledby="nearzone-title">
+          <h3 id="nearzone-title">Расчёт ближней зоны ПЭП</h3>
+          <p class="hint">Введите частоту и размер пьезоэлемента. Угол в призме и cos β вычисляются автоматически по закону Снеллиуса. <b>N</b> — по п. 7.1.12 ГОСТ Р 50.05.05-2018.</p>
+          <div class="field"><span class="field-label">Форма пьезоэлемента</span>
+            <div class="choice-row" role="group" aria-label="Форма пьезоэлемента">
+              <button class="chip active" type="button" data-nshape="circle">Круглый</button>
+              <button class="chip" type="button" data-nshape="rectangle">Прямоугольный</button>
+            </div>
+          </div>
+          <div class="pair-grid">
+            <label class="field"><span class="field-label">Частота <small>f, МГц</small></span><input id="near-frequency" type="text" inputmode="decimal" placeholder="Например, 2,5"></label>
+            <label class="field" id="near-diameter-wrap"><span class="field-label">Диаметр пьезоэлемента <small>D, мм</small></span><input id="near-diameter" type="text" inputmode="decimal" placeholder="Например, 16"></label>
+          </div>
+          <div class="pair-grid" id="near-rectangle-fields" hidden>
+            <label class="field"><span class="field-label">Размер вдоль плоскости падения <small>a, мм</small></span><input id="near-length" type="text" inputmode="decimal" placeholder="Например, 12"></label>
+            <label class="field"><span class="field-label">Размер поперёк плоскости падения <small>b, мм</small></span><input id="near-width" type="text" inputmode="decimal" placeholder="Например, 10"></label>
+          </div>
+          <label class="field"><span class="field-label">Скорость поперечной волны в металле <small>cₜ, м/с</small></span><input id="near-steel-velocity" type="text" inputmode="decimal" placeholder="3230"></label>
+          <p class="footnote"><b>Призма: оргстекло, cₚ = 2700 м/с</b> — значение заложено в расчёт, вводить его не нужно. Это принятое типовое значение: фактическая скорость зависит от марки и температуры оргстекла. Для металла по умолчанию cₜ = 3230 м/с (пример для стали).</p>
+          <div class="nearzone-values">
+            <div><span>Угол в призме β (по Снеллиусу)</span><strong id="nearzone-incidence">— °</strong></div>
+            <div><span>Косинус угла призмы cos β</span><strong id="nearzone-cosine">—</strong></div>
+            <div><span>Длина волны в металле λ</span><strong id="nearzone-wavelength">— мм</strong></div>
+            <div><span>Расчётная ближняя зона N</span><strong id="nearzone-n">— мм</strong></div>
+            <div><span>Путь ближнего сигнала L₁</span><strong id="nearzone-l1">— мм</strong></div>
+            <div><span>Требуемый путь 3N</span><strong id="nearzone-3n">— мм</strong></div>
+            <div><span>Минимальная толщина t<sub>min</sub>*</span><strong id="nearzone-tmin">— мм</strong></div>
+          </div>
+          <div id="nearzone-status" class="nearzone-status pending" role="status">Введите частоту, размер пьезоэлемента и угол — N рассчитается автоматически.</div>
+          <p class="footnote">* t<sub>min</sub> = 3N · cos(α) — для условной схемы L₁ = t/cos(α), где α — угол ввода в металл; для реального отражателя главным остаётся L₁ ≥ 3N. Площадь S = πD²/4 для круглого элемента и S = a·b для прямоугольного. Формула по ГОСТ Р 50.05.05-2018, п. 7.1.12; cos β получается по закону Снеллиуса при cₚ = 2700 м/с; геометрические особенности конкретного ПЭП требуют проверки.</p>
+        </section>
+        <aside id="angle-warning" class="notice warn" hidden><b>Ограничение метода</b><span>Упрощённая поправка для двугранного угла не подтверждена для всего диапазона 45–70°. При углах выше 52° требуется проверить применимость метода и учесть трансформацию волн.</span></aside>
+      </article>
+    </section>
+    <section class="panel input-panel">
+      <div class="panel-head"><span class="step">02</span><h2>Как измерены сигналы?</h2></div>
+      <div class="mode-card">
+        <label class="mode" id="mode-fixed"><input type="radio" name="measurement" value="fixed" checked><span><strong>Усиление не меняли</strong><small>Вводим уровни первого и второго эхосигнала в дБ.</small></span></label>
+        <label class="mode" id="mode-equal"><input type="radio" name="measurement" value="equal"><span><strong>Вытягивали до одной высоты</strong><small>Вводим усиление дефектоскопа G₁ и G₂, необходимое для выравнивания сигналов.</small></span></label>
+      </div>
+      <div class="pair-grid">
+        <label class="field"><span class="field-label" id="measurement-label1">Уровень 1-го, дБ</span><input id="signal1" type="text" inputmode="decimal" placeholder="Например, 70"></label>
+        <label class="field"><span class="field-label" id="measurement-label2">Уровень 2-го, дБ</span><input id="signal2" type="text" inputmode="decimal" placeholder="Например, 62"></label>
+      </div>
+      <div class="notice info" id="measurement-note"><b>При постоянном усилении</b><span>Разность сигналов: A₁ − A₂. Уровни должны быть выражены в дБ на одной шкале.</span></div>
+      <div class="actions"><button id="example" class="secondary-btn" type="button">Заполнить пример</button><button id="reset" class="text-btn" type="button">Очистить</button></div>
+    </section>
+    <section class="result" aria-live="polite">
+      <div class="result-cap">РАСЧЁТНЫЙ КОЭФФИЦИЕНТ ЗАТУХАНИЯ</div>
+      <div class="result-val"><span id="alpha-number">—</span><span class="result-unit">дБ/м</span></div>
+      <p id="result-message">Заполните поля измерения. Результат появится автоматически.</p>
+      <div class="result-breakdown" id="result-breakdown" hidden>
+        <div><span>Измеренная разница уровней</span><strong id="delta-measured">—</strong></div>
+        <div><span>Геометрическая поправка</span><strong id="delta-geom">—</strong></div>
+        <div><span>Поправка без геометрии</span><strong id="delta-material">—</strong></div>
+        <div><span>Разница полных путей</span><strong id="delta-distance">—</strong></div>
+      </div>
+    </section>
+    <details class="panel supplement">
+      <summary>Поправка чувствительности при переходе с СОП <span>+</span></summary>
+      <p class="hint">Если отдельно известен коэффициент затухания СОП, можно оценить разницу затухания на заданном пути. ВРЧ/DAC и уже учтённые потери повторно не компенсируют.</p>
+      <div class="pair-grid">
+        <label class="field"><span class="field-label">α СОП, дБ/м</span><input id="sop-alpha" type="text" inputmode="decimal" placeholder="Например, 25"></label>
+        <label class="field"><span class="field-label">Путь L, мм <small>в одну сторону</small></span><input id="correction-l" type="text" inputmode="decimal" placeholder="Например, 100"></label>
+      </div>
+      <div class="correction-output"><span>Разница усиления от затухания</span><strong id="correction-result">— дБ</strong></div>
+      <p class="footnote">ΔG = 2 × (α изделия − α СОП) × L / 1000. Это только составляющая поправки на затухание, не полная поправка на перенос.</p>
+    </details>
+
+    <details class="panel supplement explanation" id="measurement-guide">
+      <summary>Формулы и объяснения · инструкция <span>+</span></summary>
+      <div class="guide-intro">
+        <strong>Как измерить затухание ультразвука</strong>
+        <p>Выберите свой ПЭП и выполняйте действия по порядку. Приложение рассчитывает коэффициент затухания в дБ/м, но не заменяет утверждённую методику контроля.</p>
+      </div>
+
+      <div class="guide-common">
+        <h3>Перед измерением — для обоих ПЭП</h3>
+        <ol class="guide-steps">
+          <li>Выберите участок <b>без несплошностей</b> и с подходящей геометрией. Подготовьте поверхности, нанесите контактную жидкость.</li>
+          <li>Настройте дефектоскоп: скорость звука, ноль/задержку ПЭП, диапазон развёртки и подходящий уровень усиления. Убедитесь, что оба эхосигнала различимы и не перегружены.</li>
+          <li>Снимайте показания в устойчивом контакте; ищите <b>максимум нужного эха</b>. При работе по приложению А ГОСТ Р 50.05.05-2018 измеряйте на участках, где изменение первого донного сигнала не превышает 4 дБ; выполняйте не менее пяти измерений для усреднения.</li>
+        </ol>
+      </div>
+
+      <details class="guide-mode" id="guide-direct" open>
+        <summary>Прямой ПЭП 0° <span>Донные сигналы</span></summary>
+        <div class="guide-mode-body">
+          <p class="guide-goal">Измеряем ослабление <b>продольной волны</b> между последовательными отражениями от донной поверхности.</p>
+          <ol class="guide-steps">
+            <li><b>Выберите пару «1-й и 2-й».</b> Используйте участок с плоскими параллельными поверхностями. Установите прямой ПЭП и найдите на развёртке два последовательных донных сигнала. Пара «3-й и 4-й» в приложении — только приближённый вариант.</li>
+            <li><b>Введите толщину t.</b> При выборе «Из толщины» программа сама определит полный путь: <b>S₁ = 2t, S₂ = 4t</b> для пары 1–2; <b>S₁ = 6t, S₂ = 8t</b> для пары 3–4. Если действительные пути другие, выберите «Вручную».</li>
+            <li><b>Заполните «Ближняя зона».</b> Укажите форму и размер пьезоэлемента, частоту и скорость <b>продольной</b> волны в материале. Программа определит N и проверит <b>t ≥ 3N</b>.</li>
+            <li><b>Снимите амплитуды.</b> При неизменном усилении запишите оба уровня в дБ на одной шкале. Если для каждого эха меняли усиление, выведите сигналы на одну и ту же высоту и запишите значения усиления G₁ и G₂ в дБ — не проценты высоты.</li>
+            <li><b>Проверьте результат.</b> В блоке ниже получите затухание в дБ/м и сообщение о применимости геометрической поправки. При t &lt; 3N требуется поправка по АРД/методике; простой расчёт по 6 дБ использовать нельзя.</li>
+          </ol>
+          <div class="guide-important"><b>Если измеряете строго по ГОСТ Р 50.05.05-2018, А.2:</b> сначала определите второй донный сигнал. Затем, не сдвигая рабочий ПЭП, прижмите к донной поверхности идентичный <b>балластный ПЭП</b> (без подключения к дефектоскопу), добейтесь максимального ослабления первого сигнала и снимите его уровень. Без этой операции результат калькулятора — приближённая оценка, а не полное выполнение А.2.</div>
+          <h4>Формулы</h4>
+          <div class="guide-formula">N = Sп · f / (π · cₗ); для круга N = D² · f / (4 · cₗ)</div>
+          <div class="guide-formula">α = [ΔA − 20 · lg(S₂ / S₁)] · 1000 / (S₂ − S₁)</div>
+          <p class="guide-note">Здесь <b>Sп</b> — площадь пьезоэлемента, мм²; <b>cₗ</b> — скорость продольной волны, мм/мкс; <b>S₁, S₂</b> — полные пути туда и обратно, мм. Формула геометрической поправки применена в приближении дальней зоны. Для прямоугольной пьезопластины расчёт N по площади — оценочный.</p>
+        </div>
+      </details>
+
+      <details class="guide-mode" id="guide-angle">
+        <summary>Наклонный ПЭП <span>Двугранный угол</span></summary>
+        <div class="guide-mode-body">
+          <p class="guide-goal">Измеряем ослабление <b>поперечной волны</b> по двум сигналам от прямоугольного края плоскопараллельного изделия или образца.</p>
+          <ol class="guide-steps">
+            <li><b>Подготовьте край.</b> Нужен доступный прямоугольный край и отражающие поверхности, подходящие для этой схемы. Установите ПЭП так, чтобы получить максимум эха от угла <b>прямым лучом</b>.</li>
+            <li><b>Запишите первый путь L₁.</b> Определите путь в металле <b>в одну сторону</b> до отражателя по развёртке или геометрии. По методике А.3.1 зафиксируйте расстояние X₁ от точки ввода до края, затем переместите ПЭП на <b>2X₁</b> и получите сигнал <b>однократно отражённым лучом</b>.</li>
+            <li><b>Запишите второй путь L₂</b> и максимальные амплитуды двух сигналов. В приложении предпочтительно выбрать «Ввести L₁ и L₂». Режим «Модель 1t / 2t» — лишь геометрическое приближение; убедитесь, что он соответствует фактическим путям.</li>
+            <li><b>Введите характеристики ПЭП:</b> угол ввода в металл, частоту, форму и размеры пьезоэлемента, скорость <b>поперечной</b> волны в металле. Угол в призме β и cos β программа вычислит <b>по Снеллиусу</b>. Для оргстекла заложено cₚ = 2700 м/с; путь в призме вводить не нужно.</li>
+            <li><b>Проверьте L₁ ≥ 3N.</b> Программа покажет N и минимальную толщину для условной геометрии. Главный критерий — именно акустический путь L₁. По А.3.1 ГОСТ для этого способа применяют углы ввода <b>45–52°</b>; при 53–70° необходима иная обоснованная методика.</li>
+            <li><b>Введите уровни сигналов</b> в дБ при неизменном усилении либо усиления G₁ и G₂ при одинаковой высоте. Посмотрите коэффициент затухания и предупреждения.</li>
+          </ol>
+          <h4>Формулы</h4>
+          <div class="guide-formula">sin β = (cₚ / cₜ) · sin θ; N = Sп · f · cos θ / (π · cₜ · cos β)</div>
+          <div class="guide-formula">α = [ΔA − 20 · lg(L₂ / L₁)] · 1000 / [2 · (L₂ − L₁)]</div>
+          <p class="guide-note"><b>θ</b> — угол ввода в металл, <b>β</b> — угол распространения в призме, <b>cₜ</b> — скорость поперечной волны в металле (мм/мкс); <b>cₚ</b> — продольная скорость в оргстекле. <b>L₁ и L₂</b> — пути в одну сторону; множитель 2 учитывает обратный ход эха. N — расчётная оценка, зависящая от конструкции ПЭП.</p>
+        </div>
+      </details>
+
+      <div class="guide-common guide-last">
+        <h3>Как правильно вводить уровни сигналов</h3>
+        <div class="guide-pair"><b>Усиление не меняли</b><p>Вводите уровни A₁ и A₂ <b>в дБ</b> при одном и том же усилении. Программа использует ΔA = A₁ − A₂.</p></div>
+        <div class="guide-pair"><b>Вытягивали до одной высоты</b><p>Последовательно установите одинаковую высоту обоих сигналов, записав усиления дефектоскопа G₁ и G₂. Программа использует <b>ΔA = G₂ − G₁</b>. Не вводите 80% и 80% вместо значений усиления.</p></div>
+        <h3>Поправка чувствительности при переходе с СОП</h3>
+        <p>После подтверждения применимости измерения откройте блок «Поправка чувствительности при переходе с СОП». Введите затухание материала СОП и путь до контролируемого отражателя <b>в одну сторону</b>. Приложение рассчитает только разницу затухания — <b>не полную поправку на перенос</b>.</p>
+        <div class="guide-formula">ΔG = 2 · (αизд − αСОП) · L / 1000</div>
+        <p class="guide-note">При положительной ΔG требуется увеличение усиления на рассчитанную составляющую; при отрицательной — уменьшение. Не учитывайте повторно потери, уже включённые в ВРЧ/DAC. Отрицательное или подозрительно большое значение α требует перепроверки измерений.</p>
+        <div class="guide-important"><b>Пределы применения.</b> Расчётные формулы не учитывают все особенности отражателей, дифракции и акустического контакта. Для нормативного контроля соблюдайте действующую методику. Основа пояснений: ГОСТ Р 50.05.05-2018, приложение А (А.1–А.3) и п. 7.1.12.</div>
+      </div>
+    </details>
+    <footer>Локальные расчёты · без серверов и передачи данных · v1.8 Б</footer>
+  </main>
+  <script src="calc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
